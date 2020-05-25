@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Vue Test</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.2/css/bulma.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.js" integrity="sha256-bd8XIKzrtyJ1O5Sh3Xp3GiuMIzWC42ZekvrMMD4GxRg=" crossorigin="anonymous"></script>
+</head>
+
+<body>
+  <div class="title has-text-centered" id="main"></div>
+  <section id="form" class="section">
+    <div class="container">
+      <h1 class="title">Vue JS</h1>
+      <!-- Row for City, State, and Zip -->
+      <div id="location">
+        <div class="field">
+          <div class="control">
+            <div v-bind:class="{ 'is-active': zipDropActive }" class="dropdown">
+              <div class="dropdown-trigger">
+                <input name="zip_code" id="zip_code" v-model="zip_code" v-on:keyup="getZip" maxlength="5" class="input" type="text" placeholder="Zip" aria-haspopup="true" aria-controls="dropdown-menu3" required>
+              </div>
+              <div class="dropdown-menu" id="dropdown-menu3" role="menu">
+                <div class="dropdown-content">
+                  <a v-for="location in locations" v-on:click="chooseZip(location)" class="dropdown-item">[[ location.city ]], [[ location.state ]] [[ location.zip_code]]</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- City field -->
+        <div class="field">
+          <div class="control">
+            <input name="city" id="city" v-model="city" v-on:click="clearLocations" class="input" type="text" placeholder="City" required>
+          </div>
+        </div>
+        <!-- State field -->
+        <div class="select">
+          <select name="state" id="state" v-model="state" placeholder="State" required >
+            <option value="" disabled selected="selected">State</option>
+            <option value="AL">AL</option> <option value="AK">AK</option> <option value="AZ">AZ</option> <option value="AR">AR</option> <option value="CA">CA</option> <option value="CO">CO</option> <option value="CT">CT</option> <option value="DE">DE</option> <option value="DC">DC</option> <option value="FL">FL</option> <option value="GA">GA</option> <option value="HI">HI</option> <option value="ID">ID</option> <option value="IL">IL</option> <option value="IN">IN</option> <option value="IA">IA</option> <option value="KS">KS</option> <option value="KY">KY</option> <option value="LA">LA</option> <option value="ME">ME</option> <option value="MD">MD</option> <option value="MA">MA</option> <option value="MI">MI</option> <option value="MN">MN</option> <option value="MS">MS</option> <option value="MO">MO</option> <option value="MT">MT</option> <option value="NE">NE</option> <option value="NE">NE</option> <option value="NH">NH</option> <option value="NJ">NJ</option> <option value="NM">NM</option> <option value="NY">NY</option> <option value="NC">NC</option> <option value="ND">ND</option> <option value="NV">NV</option> <option value="OH">OH</option> <option value="OK">OK</option> <option value="OR">OR</option> <option value="PA">PA</option> <option value="RI">RI</option> <option value="SC">SC</option> <option value="SD">SD</option> <option value="TN">TN</option> <option value="TX">TX</option> <option value="UT">UT</option> <option value="VT">VT</option> <option value="VA">VA</option> <option value="WA">WA</option> <option value="WV">WV</option> <option value="WI">WI</option> <option value="WY">WY</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+  var app = new Vue({
+    el: '#location',
+    delimiters: ['[[', ']]'],
+    data: {
+      locations: [],
+      zipDropActive: false,
+      zip_code: '',
+      city: '',
+      state: '',
+    },
+    methods: {
+      getZip: function () {
+        if (this.zip_code >= 3) {
+          axios
+            .get('zips', {
+              params: {
+                zip_code: this.zip_code
+              }
+            })
+            .then(response => {
+              if (response.data.length !== 0) {
+                this.zipDropActive = true;
+                this.locations = response.data;
+              } else {
+                this.zipDropActive = false;
+              }
+            });
+        } else {
+          this.location = [];
+          this.zipDropActive = false;
+        }
+      },
+      chooseZip: function (location) {
+        this.zip_code = location.zip_code;
+        this.city = location.city;
+        this.state = location.state;
+        this.locations = [];
+        this.zipDropActive = false;
+      },
+      clearLocations: function () {
+        this.locations = [];
+        this.zipDropActive = false;
+      }
+    }
+  })
+  </script>
+
+</body>
+</html>
